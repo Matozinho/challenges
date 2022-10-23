@@ -1,0 +1,24 @@
+-- POSTGRES DATABASE
+CREATE DATABASE coding_sans;
+
+-- user table in postgres
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(255) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE OR REPLACE FUNCTION trigger_set_timestamp() 
+RETURNS TRIGGER AS $$ 
+  BEGIN 
+    NEW.updated_at = NOW();
+    RETURN NEW;
+  END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
